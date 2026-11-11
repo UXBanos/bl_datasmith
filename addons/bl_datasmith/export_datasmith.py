@@ -289,14 +289,18 @@ def collect_object_transform(bl_obj, instance_matrix=None):
 def collect_environment(world, tex_dict):
 	if not world:
 		return
-	if not world.use_nodes:
+	nodes = world.node_tree
+	if not nodes:
 		return
 
 	log.info("Collecting environment")
-	nodes = world.node_tree
 	output = nodes.get_output_node("EEVEE") or nodes.get_output_node("ALL") or nodes.get_output_node("CYCLES")
+	if not output or not output.inputs["Surface"].links:
+		return
 	background_node = output.inputs["Surface"].links[0].from_node
 	while background_node.type == "REROUTE":
+		if not background_node.inputs[0].links:
+			return
 		background_node = background_node.inputs[0].links[0].from_node
 
 	if "Color" not in background_node.inputs:
