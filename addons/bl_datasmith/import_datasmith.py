@@ -30,7 +30,7 @@ matrix_forward_inv = matrix_forward.inverted()
 
 def handle_transform(node, iter):
 	def p(x):
-		float(node.attrib[x])
+		return float(node.attrib[x])
 
 	loc = (p("tx"), p("ty"), p("tz"))
 	rot = (p("qw"), p("qx"), p("qy"), p("qz"))
@@ -146,7 +146,7 @@ def fill_transform(target, node, iter):
 	attr = node.attrib
 
 	def p(x):
-		float(attr[x])
+		return float(attr[x])
 
 	# we manually set the Y coordinate to negative
 	loc = (p("tx"), p("ty"), p("tz"))
@@ -1084,8 +1084,10 @@ def link_pbr_material(uscene, material):
 						log.debug("    idx %d data %s" % (socket_idx, incoming_node))
 						if incoming_out_sockets:
 							incoming_socket = incoming_out_sockets.get(socket_idx, None)
-						if incoming_socket is None:
+						if incoming_socket is None and socket_idx < len(incoming_node.outputs):
 							incoming_socket = incoming_node.outputs[socket_idx]
+						if incoming_socket is None:
+							log.warning("    output %d not found in node %s, skipping link", socket_idx, incoming_node)
 
 					if incoming_socket:
 						input_socket = node_input_map.get(exp_input_id)
@@ -1248,7 +1250,7 @@ def link_actor(uscene, actor, in_parent=None):
 		mat_out = mat_out @ matrix_forward_inv
 
 	bl_obj.matrix_world = mat_out
-	master_collection = bpy.data.collections[0]
+	master_collection = bpy.context.collection
 	master_collection.objects.link(bl_obj)
 
 	children = actor["children"]

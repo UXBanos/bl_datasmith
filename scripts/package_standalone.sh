@@ -30,7 +30,7 @@ monotonic="$BUILD_NUMBER"
 blender_export_path="$export_base_path/$product_name-$monotonic-blender.zip"
 cp "build/$product_name-blender.zip" "$blender_export_path"
 
-engine_versions="UE_5.4 UE_5.5 UE_5.6 UE_5.7"
+engine_versions="UE_5.4 UE_5.5 UE_5.6 UE_5.7 UE_5.8"
 IFS=" "
 
 base=$(pwd)
